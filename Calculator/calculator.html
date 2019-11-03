@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <link rel="stylesheet" href="calculator.css">
+    
+</head>
+<body>
+    <div>
+        <form class="calculator" name="dashboard">
+            <input class="display" type="text" value="" >
+            <input class="memory" type="hidden">
+            <input class="operator" type="hidden">
+            <table>
+                <tr>
+                    <td><input type="button" value="←"></td>
+                    <td><input type="button" value="CE"></td>
+                    <td><input type="button" value="C"></td>
+                    <td><input type="button" value="÷"></td>
+                    <!-- <td><input type="button" value="±"></td>
+                    <td><input type="button" value="√"></td> -->
+
+                </tr>
+                <tr>
+                    <td><input type="button" value="1"></td>
+                    <td><input type="button" value="2"></td>
+                    <td><input type="button" value="3"></td>
+                    <td><input type="button" value="×"></td>
+                    <!-- <td><input type="button" value="%"></td> -->
+
+                </tr>
+                <tr>
+                    <td><input type="button" value="4"></td>
+                    <td><input type="button" value="5"></td>
+                    <td><input type="button" value="6"></td>                    
+                    <td><input type="button" value="-"></td>                    
+                </tr>
+                <tr>
+                    <td><input type="button" value="7"></td>
+                    <td><input type="button" value="8"></td>
+                    <td><input type="button" value="9"></td>                    
+                    <!-- <td rowspan="2"><input type="button" value="+" ></td>                     -->
+                    <td ><input type="button" value="+" ></td>                    
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="button" value="0"></td>             
+                    <td><input type="button" value="."></td>                    
+                    <td ><input type="button" value="=" ></td>                    
+                </tr>
+            </table>
+
+        </form>
+    </div>
+    <script type="text/javascript" src="calculator.js"></script>
+</body>
+</html>
