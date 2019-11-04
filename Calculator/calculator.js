@@ -25,10 +25,13 @@ if(calculators) {
         }
         function clearOnlyMemories(){
             memory.value="";
-            curOperator="";
+            curOperator.value="";
+            isInputedWholeDigit = true;
         }
         function add(){
             // console.log("before","memory:",memory.value,"display:",display.value,"curOperator:",curOperator.value);
+            // 분기1. 초기입력후 동작
+            // 분기2. 이전 숫자가 있는 경우의 동작
             var result;
             if(memory.value === ""){
                 memory.value = display.value;                         
@@ -80,6 +83,7 @@ if(calculators) {
                return op1+op2;
             }
             if(curOperator.value===MINUS){
+                console.log(op1,op2);
                 return op1-op2;
             }
             if(curOperator.value===MULTIPLICATION_SYMBOL){
@@ -92,7 +96,8 @@ if(calculators) {
         function clearAll(){
             display.value="0";
             memory.value="";
-            curOperator.value="";
+            curOperator.value="";                 
+            isInputedWholeDigit=true;
         }
         function clearDisplay(){
             display.value="0";            
@@ -157,7 +162,7 @@ if(calculators) {
                     multiply();
                 });
             }
-            if(button.value==="="){
+            if(button.value===EQUAL_SYMBOL){
                 button.addEventListener('click',(e)=>{                
                     finishExpression();
                 });
