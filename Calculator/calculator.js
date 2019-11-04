@@ -28,54 +28,6 @@ if(calculators) {
             curOperator.value="";
             isInputedWholeDigit = true;
         }
-        function add(){
-            // console.log("before","memory:",memory.value,"display:",display.value,"curOperator:",curOperator.value);
-            // 분기1. 초기입력후 동작
-            // 분기2. 이전 숫자가 있는 경우의 동작
-            var result;
-            if(memory.value === ""){
-                memory.value = display.value;                         
-            }else {
-                result = calculate();     
-                memory.value = display.value=result;         
-            }            
-            isInputedWholeDigit=true;
-            curOperator.value = PLUS;
-            // console.log("after","memory:",memory.value,"display:",display.value,"curOperator:",curOperator.value);
-        }
-        function subtract(){
-            var result;
-            if(memory.value === ""){
-                memory.value = display.value;                         
-            }else {
-                result = calculate();     
-                memory.value = display.value=result;         
-            }         
-            curOperator.value = MINUS;   
-            isInputedWholeDigit=true;
-        }
-        function multiply(){
-            var result;
-            if(memory.value === ""){
-                memory.value = display.value;                         
-            }else {
-                result = calculate();     
-                memory.value = display.value=result;         
-            }            
-            isInputedWholeDigit=true;    
-            curOperator.value = MULTIPLICATION_SYMBOL;   
-        }
-        function divide(){
-            var result;
-            if(memory.value === ""){
-                memory.value = display.value;                         
-            }else {
-                result = calculate();     
-                memory.value = display.value=result;         
-            }            
-            isInputedWholeDigit=true;              
-            curOperator.value = DIVISION_SYMBOL;   
-        }
         function calculate(){
             var op1 = parseInt(memory.value);
             var op2 = parseInt(display.value);
@@ -93,6 +45,17 @@ if(calculators) {
                 return op1/op2;
             }
         }
+        function doOperation(symbol){
+            var result;
+            if(memory.value === ""){
+                memory.value = display.value;                         
+            }else {
+                result = calculate();     
+                memory.value = display.value=result;         
+            }            
+            isInputedWholeDigit=true;
+            curOperator.value = symbol
+        }        
         function clearAll(){
             display.value="0";
             memory.value="";
@@ -144,22 +107,22 @@ if(calculators) {
             }
             if(button.value===PLUS){
                 button.addEventListener('click',(e)=>{                    
-                    add();
+                    doOperation(PLUS);
                 });
             }
             if(button.value===MINUS){
-                button.addEventListener('click',(e)=>{                
-                    subtract();
+                button.addEventListener('click',(e)=>{  
+                    doOperation(MINUS);                                  
                 });
             }
             if(button.value===DIVISION_SYMBOL){
                 button.addEventListener('click',(e)=>{                
-                    divide();
+                    doOperation(DIVISION_SYMBOL);                    
                 });
             }
             if(button.value===MULTIPLICATION_SYMBOL){
                 button.addEventListener('click',(e)=>{                
-                    multiply();
+                    doOperation(MULTIPLICATION_SYMBOL);                    
                 });
             }
             if(button.value===EQUAL_SYMBOL){
