@@ -9,13 +9,12 @@ nunjucks.configure('views',{
 
 app.get('/',function(req, res, next){
     try{        
-        console.log("word.html");
-        res.send(nunjucks.render('word.html',
+        console.log("word.html");        
+        res.render('word.html',
         {
             word:"unary",
             meanings:["단항의","이항의","삼항의"]
-        }
-        ));
+        })
     } catch(error){
         console.error(error);
         next(error);

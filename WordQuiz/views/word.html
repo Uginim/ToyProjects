@@ -7,6 +7,13 @@
     <title>Document</title>
 </head>
 <body>
-    {{meanings}}
+    <form>
+        hi
+        <legend> {{word}}</legend>
+        {% for meaning in meanings %}
+        <label><input type="radio" name=""> {{meaning}} </label>
+        {% endfor %}
+        <button>정답제출</button>        
+    </form>
 </body>
 </html>
