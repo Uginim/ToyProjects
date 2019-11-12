@@ -6,14 +6,38 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
 </head>
-<body>
+<body>    
     <form>
-        hi
-        <legend> {{word}}</legend>
-        {% for meaning in meanings %}
-        <label><input type="radio" name=""> {{meaning}} </label>
-        {% endfor %}
-        <button>정답제출</button>        
+    {% for problem in problems %}    
+        <fieldset>
+            <legend><b> {{problem.word}}</b></legend>
+            <input type="hidden" name="correctAnswer" value="{{problem.correctAnswer}}">
+            {% for answer in problem.answers %}
+            <label><input type="radio" name="{{problem.word}}" value="{{answer}}"> {{answer}} </label>
+            {% endfor %}                
+        </fieldset>
+    {% endfor %}
+    <button id="btnsubmit" type="button"> 정답확인 </button>
     </form>
+    <script>
+        var btnSubmit = document.getElementById('btnsubmit');
+        if(btnSubmit){
+            btnSubmit.addEventListener('click',function(e){
+                var fieldsets = document.querySelectorAll('form fieldset');
+                Array.prototype.map.call(fieldsets,(item)=>{
+                    var correctAnswer = item.querySelector('input[type="hidden"]').value;
+                    var answerOfuser = item.querySelector('input:checked');
+                    answerOfuser = answerOfuser && answerOfuser.value;
+                    var p = document.createElement('p');
+                    if(answerOfuser== correctAnswer ){                        
+                        p.innerHTML="정답";                        
+                    }else {
+                        p.innerHTML="오답";                        
+                    }
+                    item.appendChild(p);
+                });
+            }) ;  
+        }        
+    </script>
 </body>
 </html>

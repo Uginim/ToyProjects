@@ -1,0 +1,68 @@
+{
+    "problems":[
+        {
+            "word":"unary",
+            "correctAnswer":"단항",
+            "wrongAnswers":[
+                "삼항",
+                "사항",
+                "이항"
+            ]
+
+        },
+        {
+            "word":"conversion",
+            "correctAnswer":"전환, 변환",
+            "wrongAnswers":[
+                "전압, 변압",
+                "전술, 전략",
+                "전기, 기술"
+            ]
+
+        },
+        {
+            "word":"concatenation",
+            "correctAnswer":"(사물·사건의) 연속",
+            "wrongAnswers":[
+                "(사건의) 연기, 지연",
+                "(가벼운 느낌의) 대화"                
+            ]
+        },
+        {
+            "word":"nested",
+            "correctAnswer":"중첩된",
+            "wrongAnswers":[
+                "도려낸",
+                "벗겨낸",
+                "조작된"
+            ]
+        },
+        {
+            "word":"terminology",
+            "correctAnswer":"용어,숙어",
+            "wrongAnswers":[
+                "종료, 끝냄",
+                "통신, 전화",
+                "통로"
+            ]
+        },
+        {
+            "word":"ambiguous",
+            "correctAnswer":"모호한",
+            "wrongAnswers":[
+                "적절한",
+                "야심있는",
+                "직역적인"
+            ]
+        },
+        {
+            "word":"subtract",
+            "correctAnswer":"빼다(숫자)",
+            "wrongAnswers":[
+                "부제",
+                "구독하다",
+                "드러나지 않은"
+            ]
+        }
+    ]
+}
