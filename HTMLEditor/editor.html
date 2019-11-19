@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Editor</title>
+    <style>
+        .editor{
+            width:300px;
+            height: 200px;
+            background-color:ivory;
+            border-style:double;
+        }
+        .cursor{
+            width:2px;
+            height:1.2em;
+            background-color:black;
+        }
+    </style>
+</head>
+<body>
+    <div class="editor">
+
+    </div>
+    <!-- <input class="focusTest" type="text"> -->
+</body>
+<script>
+    var value = '';
+    var editor = document.querySelector('.editor');
+    editor.setAttribute('tabindex',1);
+    editor.addEventListener('click',function (e) {               
+        e.currentTarget.focus();        
+    });
+    editor.addEventListener('keydown',function (e) {
+        
+         value = value + String.fromCharCode(e.keyCode);
+        console.log('onkeydown',e.keyCode,value);
+    });
+    editor.addEventListener('focus',function (e) {
+        // 삭제
+        var cursors = e.currentTarget.querySelectorAll('.cursor');
+        Array.prototype.map.call(cursors,function(cursor){
+            e.currentTarget.removeChild(cursor);
+        });
+
+        var cursor = document.createElement('div');        
+        cursor.className='cursor';
+        console.log('focus');        
+        e.currentTarget.appendChild(cursor);
+        console.log('cursor');
+    });
+    editor.addEventListener('focusout',function(e){
+        // 삭제
+        var cursors = e.currentTarget.querySelectorAll('.cursor');
+        Array.prototype.map.call(cursors,function(cursor){
+            e.currentTarget.removeChild(cursor);
+        });
+        
+    });
+    setInterval(function(){
+        var cursors = document.querySelectorAll('.cursor');
+        
+        console.log('interval',cursors);   
+        Array.prototype.map.call(cursors,function(cursor){
+            if(cursor.style.visibility === 'visible')            
+                cursor.style.visibility='hidden';
+            else 
+                cursor.style.visibility = 'visible';
+        });
+    },500)
+
+</script>
+</html>
