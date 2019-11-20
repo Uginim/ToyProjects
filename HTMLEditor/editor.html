@@ -13,7 +13,7 @@
             border-style:double;
         }
         .cursor{
-            width:2px;
+            width:1px;
             height:1.2em;
             background-color:black;
         }
@@ -26,38 +26,49 @@
     <!-- <input class="focusTest" type="text"> -->
 </body>
 <script>
+    function removeAllCursors(editor){        
+        var cursors = editor.querySelectorAll('.cursor');
+        Array.prototype.map.call(cursors,function(cursor){
+            editor.removeChild(cursor);
+        });
+    }
     var value = '';
     var editor = document.querySelector('.editor');
     editor.setAttribute('tabindex',1);
+    var divLines = document.createElement('div');
+    divLine.className = "lines"
+    editor.appendChild(divLine);
     editor.addEventListener('click',function (e) {               
         e.currentTarget.focus();        
     });
+    // 키 입력
     editor.addEventListener('keydown',function (e) {
-        
-         value = value + String.fromCharCode(e.keyCode);
         console.log('onkeydown',e.keyCode,value);
+        // backspace key 
+        if(e.keyCode === 8){
+            console.log(editor.innerHTML);
+            editor.innerHTML.slice(0,editor.innerHTML.length-1);
+            console.log(editor.innerHTML);
+            return;
+        }
+            
+        value = value + String.fromCharCode(e.keyCode);
+        editor.innerHTML = editor.innerHTML + String.fromCharCode(e.keyCode);
+    
     });
-    editor.addEventListener('focus',function (e) {
-        // 삭제
-        var cursors = e.currentTarget.querySelectorAll('.cursor');
-        Array.prototype.map.call(cursors,function(cursor){
-            e.currentTarget.removeChild(cursor);
-        });
 
+    editor.addEventListener('focus',function (e) {        
+        removeAllCursors(e.currentTarget);
         var cursor = document.createElement('div');        
-        cursor.className='cursor';
-        console.log('focus');        
-        e.currentTarget.appendChild(cursor);
-        console.log('cursor');
+        cursor.className='cursor';        
+        e.currentTarget.appendChild(cursor);        
     });
+
     editor.addEventListener('focusout',function(e){
-        // 삭제
-        var cursors = e.currentTarget.querySelectorAll('.cursor');
-        Array.prototype.map.call(cursors,function(cursor){
-            e.currentTarget.removeChild(cursor);
-        });
         
+        removeAllCursors(e.currentTarget);
     });
+
     setInterval(function(){
         var cursors = document.querySelectorAll('.cursor');
         
