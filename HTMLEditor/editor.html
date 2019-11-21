@@ -35,12 +35,26 @@
     var value = '';
     var editor = document.querySelector('.editor');
     editor.setAttribute('tabindex',1);
-    var divLines = document.createElement('div');
-    divLine.className = "lines"
-    editor.appendChild(divLine);
+    var divContentBody = document.createElement('div');
+    divContentBody.className = "contentbody"
+    editor.appendChild(divContentBody);
     editor.addEventListener('click',function (e) {               
         e.currentTarget.focus();        
     });
+    // 라인element 추가
+    function addNewLine(lineIndex,editor){
+        var contentBody = editor.querySelector('.contentbody');
+        // contentBody.
+        // 라인 생성
+        
+        var divLines = document.createElement('div');
+        editor.insertBefore(divLines)
+    }
+    // 현재 라인 찾기
+    function getCurrentLineNumber(editor,line) {
+        var contentBody = editor.querySelector('.contentbody');
+        return 
+    }
     // 키 입력
     editor.addEventListener('keydown',function (e) {
         console.log('onkeydown',e.keyCode,value);
@@ -50,6 +64,11 @@
             editor.innerHTML.slice(0,editor.innerHTML.length-1);
             console.log(editor.innerHTML);
             return;
+        } else if( e.keyCode === 13) {// 엔터키
+            // 현재 라인 뒤에 라인 추가
+            var currentLine;            
+            addNewLine(currentLine,editor);
+            // 현재 커서 뒤에 있는 문자열을 새 라인에 넣음
         }
             
         value = value + String.fromCharCode(e.keyCode);
@@ -58,6 +77,8 @@
     });
 
     editor.addEventListener('focus',function (e) {        
+        
+        // 커서 생성
         removeAllCursors(e.currentTarget);
         var cursor = document.createElement('div');        
         cursor.className='cursor';        
