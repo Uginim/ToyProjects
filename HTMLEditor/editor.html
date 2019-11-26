@@ -26,12 +26,14 @@
     <!-- <input class="focusTest" type="text"> -->
 </body>
 <script>
+    // 모든 커서를 지움
     function removeAllCursors(editor){        
         var cursors = editor.querySelectorAll('.cursor');
         Array.prototype.map.call(cursors,function(cursor){
             editor.removeChild(cursor);
         });
     }
+    
     var value = '';
     var editor = document.querySelector('.editor');
     editor.setAttribute('tabindex',1);
