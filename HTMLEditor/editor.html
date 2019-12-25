@@ -51,7 +51,7 @@
                 var nodeIndex; 
                 var editor = this;
                 this.cursor={
-                    line:0,
+                    lineNum:0,
                     column:0,
                 };
                 // 현재 DOM객체의 index찾기
@@ -79,6 +79,7 @@
 
                 this.element.addEventListener('click',(e)=>{          
                     e.currentTarget.focus();    
+                    console.log("clientRects",e.currentTarget.getClientRects());
                 });
                 
                 this.element.addEventListener('focusin',(e)=>{
@@ -92,39 +93,87 @@
                
                 this.element.setAttribute('tabindex',0); // focus를 받기 위함
 
-                this.lines = [];
-                // line 추가
+                this.lines = []; // content라인들
                 this.resetCursorsPosition = () => {
-                    this.cursor.element.style.top = this.cursor.line+'em';
-                    this.cursor.element.style.left = this.cursor.column+'em';
+                    // console.log('line',this.cursor.lineNum);
+                    // console.log(this.lines);
+                    // this.cursor.element.style.top = this.cursor.lineNum+'rem';
+                    // this.cursor.element.style.top = window.getSelection().getRangeAt(0).getBoundingClientRect().y;
+                    // this.cursor.element.style.left = this.cursor.column+'ex';
+                    // this.cursor.element.style.left = window.getSelection().getRangeAt(0).getBoundingClientRect().x;
+                }
+                // 문자 추가
+                this.addCharacter = (charCode) => {
+                    var lineNum = this.cursor.lineNum;
+                    var column = this.cursor.column;
+                    if(!this.lines[lineNum])
+                    {
+                        console.log(lineNum,this.lines);
+                        this.addLine();
+                        // this.lines.push();
+                    }
+                    this.lines[lineNum].innerHTML+=String.fromCharCode(charCode);
+                    this.cursor.column++;
+                    this.resetCursorsPosition();
+                }
+                // line추가
+                this.addLine = (index) =>{
+                    var newLine = document.createElement('div');
+                    var content = this.element.querySelector('.editor-content');
+                    newLine.classList.add('line');                    
+                    if(index ){
+                        content.insertBefore(newLine,content.childNodes[index]);
+                        this.lines.splice(index,0,newLine);
+                    }else {
+                        content.appendChild(newLine);
+                        this.lines.push(newLine);
+                    }
                 }
                 // 키 입력
                 this.element.addEventListener('keydown',(e) => {
-                    console.log('onkeydown',e.keyCode,value);
+                    // console.log('onkeydown',e.keyCode);
                     // backspace key 
                     if(e.keyCode === 8){
-                        console.log(editor.innerHTML);
-                        editor.innerHTML.slice(0,editor.innerHTML.length-1);
-                        console.log(editor.innerHTML);
+                        // console.log(editor.innerHTML);
+
                         return;
                     } else if( e.keyCode === 13) {// 엔터키
                         // 현재 라인 뒤에 라인 추가
                         var currentLine;            
                         addNewLine(currentLine,editor);
                         // 현재 커서 뒤에 있는 문자열을 새 라인에 넣음
-                    }
-                        
-                    value = value + String.fromCharCode(e.keyCode);
-                    editor.innerHTML = editor.innerHTML + String.fromCharCode(e.keyCode);
+                    } 
+                    this.addCharacter(e.keyCode);
                 
                 });
             }
 
             var editor = new Editor('.my-editor');
             editor.resetCursorsPosition();
+            window.addEventListener('click',(e)=>{                
+                // console.log(window.getSelection());
+                // console.log(window.getSelection().getRangeAt(0));
+                console.log('click',window.getSelection().getRangeAt(0).getBoundingClientRect());
+            });
+            window.addEventListener('dragout',(e)=>{
+                console.log('dragout');
+                console.log(window.getSelection());
+            });
+            window.addEventListener('dragenter',(e)=>{
+                console.log('dragenter');
+                console.log(window.getSelection());
+            });
+            window.addEventListener('dragstart',(e)=>{
+                console.log('dragstart');
+                console.log(window.getSelection());
+            });
+            var h1 = document.querySelector('h1');
+            h1.onclick= (e)=>{
+                console.log("h1",e.currentTarget.getClientRects());
+            }
             
-            
-            
+            // var body = document.getElementsByTagName("body")[0];
+            // window.getSelection().collapse(body,0);
         }
     
     </script>
