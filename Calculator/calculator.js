@@ -33,7 +33,7 @@ if(calculators) {
             var op2 = parseInt(display.value);
             if(curOperator.value===PLUS){                
                return op1+op2;
-            }
+            } 
             if(curOperator.value===MINUS){
                 console.log(op1,op2);
                 return op1-op2;
