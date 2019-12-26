@@ -6,104 +6,182 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Editor</title>
     <style>
-        .editor{
-            width:300px;
-            height: 200px;
-            background-color:ivory;
-            border-style:double;
+        @keyframes cursor-blink {
+            from{          
+                width:0.05em;
+                background-color: black;
+            }
+            to{             
+                border: none;   
+            }
         }
-        .cursor{
-            width:1px;
-            height:1.2em;
-            background-color:black;
+        .uginim-editor>.editor-extra-elements{
+            position: relative;
+        }
+        .uginim-editor.active>.editor-extra-elements>.cursor{
+            position:absolute;
+            /* border-left:solid black 1px; */
+            height: 1.2em;
+            top:2em;
+            left:2em;            
+            animation: cursor-blink 1400ms ease-in-out infinite;
+        }
+        .uginim-editor>.editor-content{
+            width:40em;
+            height: 10em;
+            padding:0.3em;
+        }
+        .uginim-editor:focus>.editor-content{
+            
         }
     </style>
+    <script>
+        window.addEventListener('load',init);
+        function init (){
+            function Editor (selector){
+                if(typeof selector !=='string')
+                    throw 'not string';
+                // 처음 선택자
+                this.selector= selector;
+                // selecter 
+                this.element = document.querySelector(selector);                
+                var previousClassList = this.element.classList; // 기존 DOM객체의 className 저장
+                var previousId = this.element.id; // 기존 DOM객체의 id 저장
+                var parentNode = this.element.parentNode;
+                var nodeIndex; 
+                var editor = this;
+                this.cursor={
+                    lineNum:0,
+                    column:0,
+                };
+                // 현재 DOM객체의 index찾기
+                for( nodeIndex=0;nodeIndex<parentNode.childNodes.length;nodeIndex++){
+                    if(this.element===parentNode.childNodes[nodeIndex]){
+                        break;
+                    }
+                }
+                //바꾸기 
+                this.element.outerHTML 
+                    = `<div class="uginim-editor">
+                            <header class="editor-header"></header>
+                            <div class="editor-extra-elements">    
+                                <div class="cursor"></div>
+                            </div>
+                            <div class="editor-content"></div>                            
+                        </div>`
+                var element = this.element = parentNode.childNodes[nodeIndex]; // outerHTML로 바뀐 DOM을 가져옴
+                this.cursor.element = this.element.querySelector('.editor-extra-elements>.cursor'); // cursor
+                
+                previousClassList.forEach((className)=>{
+                    this.element.classList.add(className);
+                });
+                this.element.id = previousId;
+
+                this.element.addEventListener('click',(e)=>{          
+                    e.currentTarget.focus();    
+                    console.log("clientRects",e.currentTarget.getClientRects());
+                });
+                
+                this.element.addEventListener('focusin',(e)=>{
+                    e.currentTarget.classList.add('active');
+                    // 라인이 없을 경우 라인 추가
+                });
+                
+                this.element.addEventListener('focusout',(e)=>{
+                    e.currentTarget.classList.remove('active');                    
+                });
+               
+                this.element.setAttribute('tabindex',0); // focus를 받기 위함
+
+                this.lines = []; // content라인들
+                this.resetCursorsPosition = () => {
+                    // console.log('line',this.cursor.lineNum);
+                    // console.log(this.lines);
+                    // this.cursor.element.style.top = this.cursor.lineNum+'rem';
+                    // this.cursor.element.style.top = window.getSelection().getRangeAt(0).getBoundingClientRect().y;
+                    // this.cursor.element.style.left = this.cursor.column+'ex';
+                    // this.cursor.element.style.left = window.getSelection().getRangeAt(0).getBoundingClientRect().x;
+                }
+                // 문자 추가
+                this.addCharacter = (charCode) => {
+                    var lineNum = this.cursor.lineNum;
+                    var column = this.cursor.column;
+                    if(!this.lines[lineNum])
+                    {
+                        console.log(lineNum,this.lines);
+                        this.addLine();
+                        // this.lines.push();
+                    }
+                    this.lines[lineNum].innerHTML+=String.fromCharCode(charCode);
+                    this.cursor.column++;
+                    this.resetCursorsPosition();
+                }
+                // line추가
+                this.addLine = (index) =>{
+                    var newLine = document.createElement('div');
+                    var content = this.element.querySelector('.editor-content');
+                    newLine.classList.add('line');                    
+                    if(index ){
+                        content.insertBefore(newLine,content.childNodes[index]);
+                        this.lines.splice(index,0,newLine);
+                    }else {
+                        content.appendChild(newLine);
+                        this.lines.push(newLine);
+                    }
+                }
+                // 키 입력
+                this.element.addEventListener('keydown',(e) => {
+                    // console.log('onkeydown',e.keyCode);
+                    // backspace key 
+                    if(e.keyCode === 8){
+                        // console.log(editor.innerHTML);
+
+                        return;
+                    } else if( e.keyCode === 13) {// 엔터키
+                        // 현재 라인 뒤에 라인 추가
+                        var currentLine;            
+                        addNewLine(currentLine,editor);
+                        // 현재 커서 뒤에 있는 문자열을 새 라인에 넣음
+                    } 
+                    this.addCharacter(e.keyCode);
+                
+                });
+            }
+
+            var editor = new Editor('.my-editor');
+            editor.resetCursorsPosition();
+            window.addEventListener('click',(e)=>{                
+                // console.log(window.getSelection());
+                // console.log(window.getSelection().getRangeAt(0));
+                console.log('click',window.getSelection().getRangeAt(0).getBoundingClientRect());
+            });
+            window.addEventListener('dragout',(e)=>{
+                console.log('dragout');
+                console.log(window.getSelection());
+            });
+            window.addEventListener('dragenter',(e)=>{
+                console.log('dragenter');
+                console.log(window.getSelection());
+            });
+            window.addEventListener('dragstart',(e)=>{
+                console.log('dragstart');
+                console.log(window.getSelection());
+            });
+            var h1 = document.querySelector('h1');
+            h1.onclick= (e)=>{
+                console.log("h1",e.currentTarget.getClientRects());
+            }
+            
+            // var body = document.getElementsByTagName("body")[0];
+            // window.getSelection().collapse(body,0);
+        }
+    
+    </script>
 </head>
 <body>
-    <div class="editor">
+    <h1>editor test</h1>
+    <div class="my-editor" id="my-editorid"></div>
 
-    </div>
-    <!-- <input class="focusTest" type="text"> -->
 </body>
-<script>
-    // 모든 커서를 지움
-    function removeAllCursors(editor){        
-        var cursors = editor.querySelectorAll('.cursor');
-        Array.prototype.map.call(cursors,function(cursor){
-            editor.removeChild(cursor);
-        });
-    }
-    
-    var value = '';
-    var editor = document.querySelector('.editor');
-    editor.setAttribute('tabindex',1);
-    var divContentBody = document.createElement('div');
-    divContentBody.className = "contentbody"
-    editor.appendChild(divContentBody);
-    editor.addEventListener('click',function (e) {               
-        // e.currentTarget.focus();      
-        console.log('call focus') ;
-    });
-    // 라인element 추가
-    function addNewLine(lineIndex,editor){
-        var contentBody = editor.querySelector('.contentbody');
-        // contentBody.
-        // 라인 생성
-        
-        var divLines = document.createElement('div');
-        editor.insertBefore(divLines)
-    }
-    // 현재 라인 찾기
-    function getCurrentLineNumber(editor,line) {
-        var contentBody = editor.querySelector('.contentbody');
-        return 
-    }
-    // 키 입력
-    editor.addEventListener('keydown',function (e) {
-        console.log('onkeydown',e.keyCode,value);
-        // backspace key 
-        if(e.keyCode === 8){
-            console.log(editor.innerHTML);
-            editor.innerHTML.slice(0,editor.innerHTML.length-1);
-            console.log(editor.innerHTML);
-            return;
-        } else if( e.keyCode === 13) {// 엔터키
-            // 현재 라인 뒤에 라인 추가
-            var currentLine;            
-            addNewLine(currentLine,editor);
-            // 현재 커서 뒤에 있는 문자열을 새 라인에 넣음
-        }
-            
-        value = value + String.fromCharCode(e.keyCode);
-        editor.innerHTML = editor.innerHTML + String.fromCharCode(e.keyCode);
-    
-    });
 
-    editor.addEventListener('focus',function (e) {        
-        console.log('focus');
-        // 커서 생성
-        removeAllCursors(e.currentTarget);
-        var cursor = document.createElement('div');        
-        cursor.className='cursor';        
-        e.currentTarget.appendChild(cursor);        
-    });
-
-    editor.addEventListener('focusout',function(e){
-        
-        removeAllCursors(e.currentTarget);
-    });
-
-    setInterval(function(){
-        var cursors = document.querySelectorAll('.cursor');
-        
-        // console.log('interval',cursors);   
-        Array.prototype.map.call(cursors,function(cursor){
-            if(cursor.style.visibility === 'visible')            
-                cursor.style.visibility='hidden';
-            else 
-                cursor.style.visibility = 'visible';
-        });
-    },500)
-
-</script>
 </html>

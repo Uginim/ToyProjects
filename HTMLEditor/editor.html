@@ -6,174 +6,92 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Editor</title>
     <style>
-        @keyframes cursor-blink {
-            from{          
-                width:0.05em;
-                background-color: black;
-            }
-            to{             
-                border: none;   
-            }
-        }
-        .uginim-editor>.editor-extra-elements{
-            position: relative;
-        }
-        .uginim-editor.active>.editor-extra-elements>.cursor{
-            position:absolute;
-            /* border-left:solid black 1px; */
-            height: 1.2em;
-            top:2em;
-            left:2em;            
-            animation: cursor-blink 1400ms ease-in-out infinite;
+        .uginim-editor>.editor-content,
+        .uginim-editor>.editor-content *:focus{
+           outline: 0;
         }
         .uginim-editor>.editor-content{
-            width:40em;
-            height: 10em;
-            padding:0.3em;
+            min-width: 1em;
+            min-height: 1em;
         }
-        .uginim-editor:focus>.editor-content{
-            
+        .uginim-editor>.editor-content p.line{
+            min-width: 1em;
+            min-height: 1em;
         }
+
     </style>
     <script>
-        window.addEventListener('load',init);
-        function init (){
-            function Editor (selector){
-                if(typeof selector !=='string')
-                    throw 'not string';
-                // 처음 선택자
-                this.selector= selector;
-                // selecter 
-                this.element = document.querySelector(selector);                
-                var previousClassList = this.element.classList; // 기존 DOM객체의 className 저장
-                var previousId = this.element.id; // 기존 DOM객체의 id 저장
-                var parentNode = this.element.parentNode;
-                var nodeIndex; 
-                var editor = this;
-                this.cursor={
-                    lineNum:0,
-                    column:0,
-                };
+        function Editor (selector){
+            if(typeof selector !=='string')
+                throw 'not string';
+            this.selector = selector;
+            this.element = document.querySelector(selector);
+            // 초기화
+            this.initEditor = (element)=>{ 
+                var parentNode = element.parentNode;
+                var nodeIndex =0;
                 // 현재 DOM객체의 index찾기
                 for( nodeIndex=0;nodeIndex<parentNode.childNodes.length;nodeIndex++){
                     if(this.element===parentNode.childNodes[nodeIndex]){
                         break;
                     }
                 }
-                //바꾸기 
-                this.element.outerHTML 
+                element.outerHTML 
                     = `<div class="uginim-editor">
-                            <header class="editor-header"></header>
-                            <div class="editor-extra-elements">    
-                                <div class="cursor"></div>
-                            </div>
-                            <div class="editor-content"></div>                            
+                            <header class="editor-header">
+                                <div class="toolbox""></div>
+                            </header>
+                            <div class="editor-content"><p class="line"></p></div>
                         </div>`
-                var element = this.element = parentNode.childNodes[nodeIndex]; // outerHTML로 바뀐 DOM을 가져옴
-                this.cursor.element = this.element.querySelector('.editor-extra-elements>.cursor'); // cursor
-                
-                previousClassList.forEach((className)=>{
-                    this.element.classList.add(className);
-                });
-                this.element.id = previousId;
-
-                this.element.addEventListener('click',(e)=>{          
-                    e.currentTarget.focus();    
-                    console.log("clientRects",e.currentTarget.getClientRects());
-                });
-                
-                this.element.addEventListener('focusin',(e)=>{
-                    e.currentTarget.classList.add('active');
-                    // 라인이 없을 경우 라인 추가
-                });
-                
-                this.element.addEventListener('focusout',(e)=>{
-                    e.currentTarget.classList.remove('active');                    
-                });
-               
-                this.element.setAttribute('tabindex',0); // focus를 받기 위함
-
-                this.lines = []; // content라인들
-                this.resetCursorsPosition = () => {
-                    // console.log('line',this.cursor.lineNum);
-                    // console.log(this.lines);
-                    // this.cursor.element.style.top = this.cursor.lineNum+'rem';
-                    // this.cursor.element.style.top = window.getSelection().getRangeAt(0).getBoundingClientRect().y;
-                    // this.cursor.element.style.left = this.cursor.column+'ex';
-                    // this.cursor.element.style.left = window.getSelection().getRangeAt(0).getBoundingClientRect().x;
-                }
-                // 문자 추가
-                this.addCharacter = (charCode) => {
-                    var lineNum = this.cursor.lineNum;
-                    var column = this.cursor.column;
-                    if(!this.lines[lineNum])
-                    {
-                        console.log(lineNum,this.lines);
-                        this.addLine();
-                        // this.lines.push();
-                    }
-                    this.lines[lineNum].innerHTML+=String.fromCharCode(charCode);
-                    this.cursor.column++;
-                    this.resetCursorsPosition();
-                }
-                // line추가
-                this.addLine = (index) =>{
-                    var newLine = document.createElement('div');
-                    var content = this.element.querySelector('.editor-content');
-                    newLine.classList.add('line');                    
-                    if(index ){
-                        content.insertBefore(newLine,content.childNodes[index]);
-                        this.lines.splice(index,0,newLine);
-                    }else {
-                        content.appendChild(newLine);
-                        this.lines.push(newLine);
-                    }
-                }
-                // 키 입력
-                this.element.addEventListener('keydown',(e) => {
-                    // console.log('onkeydown',e.keyCode);
-                    // backspace key 
-                    if(e.keyCode === 8){
-                        // console.log(editor.innerHTML);
-
-                        return;
-                    } else if( e.keyCode === 13) {// 엔터키
-                        // 현재 라인 뒤에 라인 추가
-                        var currentLine;            
-                        addNewLine(currentLine,editor);
-                        // 현재 커서 뒤에 있는 문자열을 새 라인에 넣음
-                    } 
-                    this.addCharacter(e.keyCode);
-                
-                });
+                element = parentNode.childNodes[nodeIndex]; // outerHTML로 바뀐 DOM을 가져옴
+                return element;
             }
+            this.element = this.initEditor(this.element); // 바꿔진 dom으로 갱신
+            // this.element.setAttribute('tabindex',0); // focus를 받기 위함
+            this.editorContent=this.element.querySelector('.editor-content')
+            this.editorContent.setAttribute('tabindex',0); // focus를 받기 위함
+            this.editorContent.setAttribute('contenteditable','true'); // 내용이 수정가능해짐
+            var editorContent = this.editorContent;
+            this.editorContent.addEventListener('focus',(e)=>{
+                // console.log(editorContent);
+                console.log('focus selection',window.getSelection());
+                // editorContent.setSelectionRange(0, 0);
+                // 커서 추적하기 
 
-            var editor = new Editor('.my-editor');
-            editor.resetCursorsPosition();
-            window.addEventListener('click',(e)=>{                
-                // console.log(window.getSelection());
-                // console.log(window.getSelection().getRangeAt(0));
-                console.log('click',window.getSelection().getRangeAt(0).getBoundingClientRect());
             });
-            window.addEventListener('dragout',(e)=>{
-                console.log('dragout');
-                console.log(window.getSelection());
+            this.editorContent.addEventListener('changed',(e)=>{
+                console.log('editorContent.childNodes.length',editorContent.childNodes.length);
+                
+
             });
-            window.addEventListener('dragenter',(e)=>{
-                console.log('dragenter');
-                console.log(window.getSelection());
+            this.editorContent.addEventListener('input',(e)=>{
+                console.log('selection',window.getSelection(),e);                
+                if(editorContent.childNodes.length===1 ){
+                    if(editorContent.childNodes[0].innerHTML.length===0)
+                        e.preventDefault();
+                    console.log(editorContent.childNodes[0]);
+                    console.dir(editorContent.childNodes[0]);
+                    // editorContent.appendChild(newLine);
+                }
+                // else if
+                // 커서 추적하기
             });
-            window.addEventListener('dragstart',(e)=>{
-                console.log('dragstart');
-                console.log(window.getSelection());
-            });
-            var h1 = document.querySelector('h1');
-            h1.onclick= (e)=>{
-                console.log("h1",e.currentTarget.getClientRects());
-            }
             
-            // var body = document.getElementsByTagName("body")[0];
-            // window.getSelection().collapse(body,0);
+
+            // 1. Enter키 입력
+            // 2. 키입력
+            // 3. 
+
+            // cursor 추적하기
+            this.traceCaret = ()=>{
+                console.log(window.getSelection());
+            }
+        }
+
+        window.addEventListener('load',init);
+        function init (){
+            var editor = new Editor('.my-editor');
+            
         }
     
     </script>
