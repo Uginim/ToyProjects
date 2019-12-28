@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>흑과 백 II</title>
+    <style>
+        .point-lamps{
+            width: 80%;
+        }
+        .score .mine{
+            text-decoration: blue underline;            
+        }
+        .score .opponent{
+            text-decoration: red underline;                        
+        }
+        
+
+        .point-lamps-tower tr{
+            margin:0;
+            
+        }
+        .point-lamps-tower tr>td{
+            height:2.75em;
+            width:4em;
+            /* outline:1px solid black; */
+            border: inset 0.3em gray;
+            border-collapse: separate;
+            text-align: center;        
+            background-color: gray;
+            color: gray;
+            margin:0%;
+            text-decoration: none;
+        }
+        .point-lamps-tower.mine{            
+            border-spacing: 0;
+            border: 0.3em solid blue;
+        }
+        .point-lamps-tower.opponent{
+            
+            border-spacing: 0;
+            border: 0.3em solid red;
+        }
+        .score{
+            padding:10px;
+
+        }
+        .score>span{
+            font-size: 3.5em;
+        }
+        .arrow{
+            
+        }
+        
+        .point-lamps-tower tr>td.active {
+            background-color:yellow;
+            border: outset 0.3em gray;
+            border-collapse: separate;
+            color:black;
+        }
+        @media screen and (min-width:1040px){
+            
+        }
+    </style>
+    <script>
+        window.addEventListener('load',init);
+        function init(){
+            var round2 = document.querySelector('.round1');
+            round2.style.fill="red";
+            // console.dir(round2);
+        }
+    </script>
+</head>
+<body>
+    <!-- 라운드 진행상황 -->
+    <div>
+        <svg version="1.1" baseProfile="full" width="100%" height="4em" xmlns="http://www.w3.org/2000/svg">
+            <line x1="10%" x2="90%" y1="50%" y2="50%" stroke="black" stroke-width="3"></line>
+            <circle class="round1"cx="10%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round2"cx="20%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round3"cx="30%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round4"cx="40%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round5"cx="50%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round6"cx="60%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round7"cx="70%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round8"cx="80%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <circle class="round9"cx="90%" cy="50%" r="0.5em" fill ="white" stroke="black"/>
+            <text class="round-num" x="10%" y="3.5em" dx="-1.75em" textLength="3em">Round 1</text>
+            <text class="round-num" x="90%" y="3.5em" dx="-1.75em" textLength="3em">Round 9</text>  
+            <!-- 움직이는 화살표 -->
+            <!-- <svg version="1.1" baseProfile="full" width="5%" height="1.5em" xmlns="http://www.w3.org/2000/svg">
+                <path class="arrow" fill="black" stroke="black" transform="scale(0.3, 0.5)"
+                    d="M 18,0 
+                    L 22,0 
+                    L 22,20 
+                    L 40,20 
+                    L 20,40 
+                    L 0,20 
+                    L 18,20"/>  
+            </svg>           -->
+        </svg>
+        
+    </div>
+    <!-- 스코어 -->
+    <div class="score">
+        <span class="mine">0</span>
+        <span>:</span>
+        <span class="opponent">0</span>
+    </div>
+    <!-- 제출한 카드 -->
+    <div>
+        <div>
+
+        </div>
+        <div>
+            player님의 
+        </div>
+    </div>
+    <!-- 현재 턴 -->
+
+    <!-- 내 포인트 -->
+    <!-- <meter min="0" max="99" value="64" width="150em" >미터 컨텐츠</meter> -->
+    <!--  -->
+    <section class="point-lamps">
+        <table class="point-lamps-tower mine" style="float:left">
+            <tr>
+                <td class="">80~99</td>
+            </tr>
+            <tr>
+                <td class="active">60~79</td>
+            </tr>
+            <tr>
+                <td class="active">40~59</td>
+            </tr>
+            <tr>
+                <td class="active">20~39</td>
+            </tr>
+            <tr>
+                <td class="active">0~19</td>
+            </tr>
+        </table>    
+        <table class="point-lamps-tower opponent" style="float:right">
+            <tr>
+                <td class="active">80~99</td>
+            </tr>
+            <tr>
+                <td class="active">60~79</td>
+            </tr>
+            <tr>
+                <td class="active">40~59</td>
+            </tr>
+            <tr>
+                <td class="active">20~39</td>
+            </tr>
+            <tr>
+                <td class="active">0~19</td>
+            </tr>
+        </table>    
+        <hr style="clear:both; visibility: hidden;">
+    </section>
+    <input type="text" id="point-input">
+    <button>입력</button>
+</body>
+</html>
