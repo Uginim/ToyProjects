@@ -5,64 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>흑과 백 II</title>
-    <style>
-        .point-lamps{
-            width: 80%;
-        }
-        .score .mine{
-            text-decoration: blue underline;            
-        }
-        .score .opponent{
-            text-decoration: red underline;                        
-        }
-        
-
-        .point-lamps-tower tr{
-            margin:0;
-            
-        }
-        .point-lamps-tower tr>td{
-            height:2.75em;
-            width:4em;
-            /* outline:1px solid black; */
-            border: inset 0.3em gray;
-            border-collapse: separate;
-            text-align: center;        
-            background-color: gray;
-            color: gray;
-            margin:0%;
-            text-decoration: none;
-        }
-        .point-lamps-tower.mine{            
-            border-spacing: 0;
-            border: 0.3em solid blue;
-        }
-        .point-lamps-tower.opponent{
-            
-            border-spacing: 0;
-            border: 0.3em solid red;
-        }
-        .score{
-            padding:10px;
-
-        }
-        .score>span{
-            font-size: 3.5em;
-        }
-        .arrow{
-            
-        }
-        
-        .point-lamps-tower tr>td.active {
-            background-color:yellow;
-            border: outset 0.3em gray;
-            border-collapse: separate;
-            color:black;
-        }
-        @media screen and (min-width:1040px){
-            
-        }
-    </style>
+    <link rel="stylesheet" href="./css/gamedisplay.css">
     <script>
         window.addEventListener('load',init);
         function init(){
