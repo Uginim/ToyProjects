@@ -95,46 +95,20 @@ if(calculators) {
         }
         Array.prototype.map.call(buttons, function(button){
             
-            if(isDigit(button.value)) {
-                button.addEventListener('click',(e)=>{                
+            button.addEventListener('click',(e)=>{                
+                if (isDigit(button.value)) {
                     inputDigit(button.value);
-                });
-            }
-            if(button.value==="C"){
-                button.addEventListener('click',(e)=>{                
+                } else if (button.value==="C"){
                     clearAll(button.value);
-                });
-            }
-            if(button.value===PLUS){
-                button.addEventListener('click',(e)=>{                    
-                    doOperation(PLUS);
-                });
-            }
-            if(button.value===MINUS){
-                button.addEventListener('click',(e)=>{  
-                    doOperation(MINUS);                                  
-                });
-            }
-            if(button.value===DIVISION_SYMBOL){
-                button.addEventListener('click',(e)=>{                
-                    doOperation(DIVISION_SYMBOL);                    
-                });
-            }
-            if(button.value===MULTIPLICATION_SYMBOL){
-                button.addEventListener('click',(e)=>{                
-                    doOperation(MULTIPLICATION_SYMBOL);                    
-                });
-            }
-            if(button.value===EQUAL_SYMBOL){
-                button.addEventListener('click',(e)=>{                
+                } else if (button.value===EQUAL_SYMBOL){
                     finishExpression();
-                });
-            }
-            if(button.value===LEFTARROW_SYMBOL){
-                button.addEventListener('click',(e)=>{                
+                } else if (button.value===LEFTARROW_SYMBOL){                
                     doBackspace();
-                });
-            }
+                } else{
+                    doOperation(button.value);               
+                }                
+            });
+            
         });
     });
 }
