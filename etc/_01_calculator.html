@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>가변 계산기</title>
+<style type="text/css">
+	.col-width{ width:100px; }
+	.col-height{ width:100px; }
+	.col-float-left div{ float: left; }
+	.col-float-left::after{
+		content: '';
+		display: block;
+		clear: both;
+	} 
+	.color-yellow { color: yellow;	}
+	.color-red { color: red; }
+	.color-blue { color: blue; }
+	.col-mg-5 {		margin: 5px;	}
+	.col-mg-10 {		margin: 10px;	}
+	.col-mg-20 {		margin: 20px;	}
+</style>
+</head>
+<body>
+	<header>
+		<h1>계산기 과제 - 변형(가로 가변 계산기)</h1>
+	</header>
+	<section>
+		<div class="col-float-left">
+			<div>가로길이 : <input id="width-col" type="number" placeholder="계산기의 가로길이를 입력(최대 9)" value="4"></div>
+			<!--<div>최대숫자 : <input id="max-num" type="number" placeholder="계산기의 최대숫자 입력" value="9"></div>-->
+			<div><button onclick="fnDrawCalc()" type="button">적용</button></div>
+		</div>
+		<div> 
+			<p>계산로그</p>
+			<p id="cac-log"></p>
+		</div>
+		<div>계산식 : <input id="calc-formula" type="text"> <button onclick="fnCalc()" type="button">계산</button></div>
+		<div id="calc-main">
+		</div>
+	</section>
+</body>
+</html>
+<!-- javascript 시작 -->
+<script>
+
+var calcMethSymbols = ['(',')','%','AC','%','X','-','.','=','+'];
+var calcDivTags = ["<button type='button' class='col-width col-height col-mg-5' onclick='fnSetFormula(this)'>", "<div class='col-float-left'>","</div>","</button>"];
+
+fnDrawCalc(); // 4칸씩 노출
+
+function fnDrawCalc() { // widthCol - 계산기 가로 칸수, maxNum - 계산기 안에 있는 최대 숫자
+	document.getElementById('calc-main').innerHTML = "";
+	
+	var calcBodyTag = "";
+	var widthCol = document.getElementById('width-col').value;
+	// var maxNum = document.getElementById('max-num').value;
+	var maxNum = 9;
+
+	var j=0, k=0, l=0, m=0; // j - calcMethSymbols 배열, k - calcNumArr 배열, widthCol 마다 grop하려고 만듦
+	var widthColBool = new Boolean(false); // width 넓이만큼 해당되는지
+
+	for(var i = 0; i<calcMethSymbols.length+maxNum+1; i++) {
+		widthColBool = ((i+1)%widthCol==0);
+		if(l*widthCol == i) { // float 상위 태그 넣기 위해서
+			if(l != 0) calcBodyTag += calcDivTags[2];
+			calcBodyTag += calcDivTags[1];
+			l+=1;
+		}
+		calcBodyTag += calcDivTags[0];
+		if((i < widthCol) || (widthColBool) || k > maxNum) {// 첫번째 줄은 기호로 채우고, 4자리마다 기호
+			calcBodyTag += calcMethSymbols[j];
+			if(calcMethSymbols.length+maxNum == i) {
+				calcBodyTag += calcDivTags[2];
+			}
+			j+=1;
+		} else {
+			if(k==maxNum) {
+				calcBodyTag += 0;
+			} else {
+				calcBodyTag += k+1;
+			}
+			k+=1;
+		}
+		calcBodyTag += calcDivTags[3];
+		if(((l+1)*widthCol-1) == i) { // float 상위 태그 넣기 위해서
+			calcBodyTag += calcDivTags[1];
+			l+=1;
+		}
+	}
+
+	document.getElementById('calc-main').innerHTML += calcBodyTag;
+}
+
+function fnSetFormula(em) {
+	var tempTxt = em.innerText;
+	if(tempTxt == "AC") {
+		document.getElementById('calc-formula').value = "";
+		return;
+	};
+	tempTxt = tempTxt == 'X' ? tempTxt.replace('X', '*') : tempTxt;
+	
+
+	var formulaTxt = document.getElementById('calc-formula').value;
+	if(fnValidFormula(formulaTxt, em)) {
+		console.log("진짜");
+		console.log(tempTxt);
+		document.getElementById('calc-formula').value += tempTxt;
+	} 
+}
+
+function fnCalc() {
+	var formulaTxt = document.getElementById('calc-formula').value;
+}
+
+function fnValidFormula(formulaTxt, inputText) {
+
+	console.log(formulaTxt);
+	console.log(inputText);
+
+	var lastTxt = formulaTxt.substr(-1);
+	var rtnVal = false;
+	if(formulaTxt.length == 0) return rtnVal;
+	calcMethSymbols.forEach(function(em, idx) {
+		if(lastTxt == inputText){
+			rtnVal = false;
+		}
+		rtnVal = true;
+	});
+	return rtnVal;
+}
+</script>

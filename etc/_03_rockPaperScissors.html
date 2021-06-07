@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>가위 바위 보</title>
+</head>
+<body>
+	<header>
+		<h1>가위 바위 보 과제</h1>
+	</header>
+	<section>
+		<select id="RPSList"></select>
+		<button onclick="getvictor()">결과보기</button>
+		<p id="result"></p>
+	</section>
+</body>
+</html>
+<!-- javascript 시작 -->
+<script>
+
+var RPS = ['가위','바위','보']; // 가위 < 바위 < 보 
+
+getRPSList();
+
+function getRPSList() {
+	var oprionHtml="";
+	RPS.forEach(function(em, idx) {
+		oprionHtml+="<option value='"+idx+"'>"+em+"</option>";
+	});
+	document.getElementById('RPSList').innerHTML = oprionHtml;
+}
+
+function getvictor() {
+	var system = getRandomInt(RPS.length);
+	var userOptionIdx = document.getElementById('RPSList').selectedIndex;
+	var user = document.getElementById('RPSList').children[userOptionIdx].value;
+	var victorStr = ".";
+
+	var resultStr = "";
+	
+	resultStr += "사용자 : "+RPS[user]+"\n";
+	resultStr += "시스템 : "+RPS[system]+"\n";
+
+	if(Math.abs(system-user) == 2) { // 가위, 보 케이스
+		user = user*-1;
+		system = system*-1;
+	}
+
+	if(system-user > 0) {
+		victorStr = "졌습니다."
+	} else if(system-user < 0) {
+		victorStr = "이겼습니다."
+	} else {
+		victorStr = "비겼습니다.";
+	}
+
+	resultStr += victorStr;
+
+	document.getElementById('result').innerText = resultStr;
+}
+
+function getRandomInt(max){
+	return Math.floor(Math.random()*max);
+}
+
+</script>

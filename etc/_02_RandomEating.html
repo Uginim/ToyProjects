@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>오늘 뭐 먹지?</title>
+</head>
+<body>
+	<header>
+		<h1>오늘 뭐 먹지? 과제</h1>
+	</header>
+	<section>
+		<div>
+			<button type="button" onclick="getTodayFood()">선택하기</button>
+			<span>결과 : </span><span id="todayFood"></span>
+		</div>
+		<div id="foodAdd">
+			<input id="inputAddFood" type="text"/><button type="button" onclick="addFootList()">선택지항목추가</button>
+		</div>
+		<div id="foodList"></div>
+	</section>
+</body>
+</html>
+<!-- javascript 시작 -->
+<script>
+
+var food = ['짜장면','짬뽕','탕수육','치킨','족발','보쌈','피자','햄버거','부대찌개','김치찌개','된장찌개','짜글이','마라탕','돈까스','라멘','초밥','닭발','불닭','찜닭','떡볶이','파스타','회','삼겹살','냉면','갈비','닭도리탕','곱창','감자탕','국밥','해물찜','킹크랩','랍스타'];
+
+initFootList();
+
+function initFootList() {
+	var foodHtml = "";
+	foodHtml += "<ul>";
+	food.forEach(function(em, idx) {
+		foodHtml+="<li>"+em+"</li>";
+	});
+	foodHtml += "</ul>";
+	document.getElementById('foodList').innerHTML = foodHtml;
+}
+
+function addFootList() {
+	console.log("추가추가");
+	food.push(document.getElementById('inputAddFood').value);
+	initFootList();
+}
+
+function getTodayFood() {
+	var foodStr = food[getRandomInt(food.length)];
+	document.getElementById('todayFood').innerHTML = foodStr;
+}
+
+function getRandomInt(max){
+	return Math.floor(Math.random()*max);
+}
+
+</script>
