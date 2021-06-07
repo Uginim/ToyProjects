@@ -29,12 +29,13 @@
 			<!--<div>최대숫자 : <input id="max-num" type="number" placeholder="계산기의 최대숫자 입력" value="9"></div>-->
 			<div><button onclick="fnDrawCalc()" type="button">적용</button></div>
 		</div>
+		<div>계산식 : <input id="calc-formula" type="text"> <button onclick="fnCalc()" type="button">계산</button></div>
+		<div id="calc-main">
+		</div>
+		<div id="btn-container"></div>
 		<div> 
 			<p>계산로그</p>
 			<p id="cac-log"></p>
-		</div>
-		<div>계산식 : <input id="calc-formula" type="text"> <button onclick="fnCalc()" type="button">계산</button></div>
-		<div id="calc-main">
 		</div>
 	</section>
 </body>
@@ -45,23 +46,42 @@
 	 * @
 	 */
 	var frameOfBtn ;
-	var DEFAULT_BTN_WIDTH = "25px";
-	var DEFAULT_BTN_HEIGHT = "25px";
+	var DEFAULT_BTN_WIDTH = "100px";
+	var DEFAULT_BTN_HEIGHT = "100px";
+	var DEFAULT_MARGIN_INTERVAL = "15px";
 
 	var createButtonElement = function (btnMetaArr, cols, targetEle) {
-		if (!targetEle || !btnMetaArr || cols) {
+		if (!targetEle || !btnMetaArr || !cols) {
 			console.log("Can't create")
 			return ;
 		}
-		targetEle.style.display="flex";
+		targetEle.style.display='grid';
+		targetEle.style.gridTemplateColumns=`repeat(${cols}, 1fr)`;
+		targetEle.style.width=parseInt(DEFAULT_BTN_WIDTH) * cols + parseInt(DEFAULT_MARGIN_INTERVAL) * (cols - 1)+"px";
+
+		formulaEle = document.getElementById('calc-formula');
+		var operatorMap = {};
 		btnMetaArr.forEach((item,idx,arr) => {
 			var btn = document.createElement('button');
 			btn.style.width = item.width || DEFAULT_BTN_WIDTH;
 			btn.style.width = item.height || DEFAULT_BTN_HEIGHT;
 			btn.innerText = item.nomalSymbol || "N/A";
-			if(itme && item.type==='action'){
-				
+			
+			if (item.type === 'operator') {
+				operatorMap[item.nomalSymbol] = item;	
 			}
+			btn.addEventListener('click',function(event){
+				if (item.type && item.type === 'action' && item.controlAction) {
+					item.controlAction.call(item);
+				} else {
+					var symbol = item.nomalSymbol;
+					if (item.type === 'operator') {
+						symbol = ' ' + symbol + ' ';
+					}
+					formulaEle.value += symbol;
+				}
+			});
+			
 			targetEle.appendChild(btn);
 		});
 
@@ -100,16 +120,25 @@
 			nomalSymbol:'AC',
 			meaning:'All Clear',
 			type:'action',
+			controlAction:function(event){
+
+			},
 		},
 		{
 			nomalSymbol:'C',
 			meaning:'Clear',
 			type:'action',
+			controlAction:function(event){
+	
+			},
 		},
 		{
 			nomalSymbol:'CE',
 			meaning:'Clear Entry',
 			type:'action',
+			controlAction:function(event){
+	
+			},
 		},
 		{
 			nomalSymbol:'÷',
@@ -117,7 +146,7 @@
 			type : 'operator',
 			operatorAction : function (a, b){
 				if(b===0)
-					throw Error("tried to divide by ZERO.");
+				throw Error("tried to divide by ZERO.");
 				return a / b;				
 			},
 		},
@@ -152,6 +181,9 @@
 			nomalSymbol:'=',
 			meaning:'=',
 			type:'action',
+			controlAction:function(event){
+			
+			},
 		},
 		{
 			nomalSymbol:'.',
@@ -160,6 +192,7 @@
 		},
 		];
 		var DEFAULT_NUM_COLS = 4;
-		createButtonElement(btnMetaArr.concat(numberSymbols),DEFAULT_NUM_COLS);
+		var targetEle = document.getElementById('btn-container');
+		createButtonElement(btnMetaArr.concat(numberSymbols),DEFAULT_NUM_COLS,targetEle);
 	});
 </script>
