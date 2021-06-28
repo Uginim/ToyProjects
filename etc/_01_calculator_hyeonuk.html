@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>가변 계산기</title>
+<style type="text/css">
+	.col-width{ width:100px; }
+	.col-height{ width:100px; }
+	.col-float-left div{ float: left; }
+	.col-float-left::after{
+		content: '';
+		display: block;
+		clear: both;
+	} 
+	.color-yellow { color: yellow;	}
+	.color-red { color: red; }
+	.color-blue { color: blue; }
+	.col-mg-5 {		margin: 5px;	}
+	.col-mg-10 {		margin: 10px;	}
+	.col-mg-20 {		margin: 20px;	}
+</style>
+</head>
+<body>
+	<header>
+		<h1>계산기 과제 - 변형(가로 가변 계산기)</h1>
+	</header>
+	<section>
+		<div class="col-float-left">
+			<div>가로길이 : <input id="width-col" type="number" placeholder="계산기의 가로길이를 입력(최대 9)" value="4"></div>
+			<!--<div>최대숫자 : <input id="max-num" type="number" placeholder="계산기의 최대숫자 입력" value="9"></div>-->
+			<div><button onclick="fnDrawCalc()" type="button">적용</button></div>
+		</div>
+		<div>계산식 : <input id="calc-formula" type="text"> <button onclick="doCalc()" type="button">계산</button></div>
+		<div id="calc-main">
+		</div>
+		<div id="btn-container"></div>
+		<div> 
+			<p>계산로그</p>
+			<p id="calc-log"></p>
+		</div>
+	</section>
+</body>
+</html>
+<!-- javascript 시작 -->
+<script>
+	/**
+	 * @description 엘리먼트 핸들러
+	 */
+
+	var handlerBuilder = function (selector) {
+		var ele = document.querySelector(selector);
+		return {
+			setValue:function(value) {
+				if(ele.tagName === 'INPUT'){
+					ele.value = value;
+
+				}else {
+					ele.innerText = value;
+				}
+			},
+			getValue:function(value) {
+				if(ele.tagName === 'INPUT'){
+					return ele.value;
+
+				}
+				return 	ele.innerText;
+			}
+		}
+	};
+
+	var frameOfBtn ;
+	var DEFAULT_BTN_WIDTH = "100px";
+	var DEFAULT_BTN_HEIGHT = "100px";
+	var DEFAULT_MARGIN_INTERVAL = "15px";
+	var EXPRESSION_TEXT_SELECTOR = '#calc-formula';
+
+	/** 
+	 * @description 버튼을 생성함
+	 * @param {Obejct[]} btnMetaArr 버튼의 메타정보
+	 * @param {number} cols 컬럼개수
+	 * @param {HTMLElement} targetEle 버튼을 넣을 엘리먼트
+	 */
+	var createButtonElement = function (btnMetaArr, cols, targetEle) {
+		if (!targetEle || !btnMetaArr || !cols) {
+			console.log("Can't create")
+			return ;
+		}
+		targetEle.style.display='grid';
+		targetEle.style.gridTemplateColumns=`repeat(${cols}, 1fr)`;
+		targetEle.style.width=parseInt(DEFAULT_BTN_WIDTH) * cols + parseInt(DEFAULT_MARGIN_INTERVAL) * (cols - 1)+"px";
+
+		formulaEle = document.getElementById('calc-formula');
+		var operatorMap = {};
+
+		// NEED EVENT DELEGATION
+		btnMetaArr.forEach((item,idx,arr) => {
+			var btn = document.createElement('button');
+			btn.style.width = item.width || DEFAULT_BTN_WIDTH;
+			btn.style.width = item.height || DEFAULT_BTN_HEIGHT;
+			btn.innerText = item.nomalSymbol || "N/A";
+			
+			if (item.type === 'operator') {
+				operatorMap[item.nomalSymbol] = item;	
+			}
+			btn.addEventListener('click',function(event){
+				if (item.type && item.type === 'action' && item.controlAction) {
+					item.controlAction.call(item);
+				} else {
+					var symbol = item.nomalSymbol;
+					formulaEle.value += symbol;
+				}
+			});
+			
+			targetEle.appendChild(btn);
+		});
+
+	}
+
+	var LOG_TEXT_SELECTOR = '#calc-log';
+	var RESULT_TEXT_SELECTOR = '#calc-main';
+	
+	
+	/* MAIN */
+	window.addEventListener('load',function(event){
+		var expressionHandler = handlerBuilder(EXPRESSION_TEXT_SELECTOR);
+		var logHandler = handlerBuilder(LOG_TEXT_SELECTOR);
+		var resultHandler = handlerBuilder(RESULT_TEXT_SELECTOR);
+		var numberSymbols = [];
+		var i = 1;
+		while(i<=10) {
+			var curNum = ( i % 10 ); // 0을 맨 뒤로 하기 위함 
+			numberSymbols.push({
+				nomalSymbol : "" + curNum,
+				meaning : curNum,
+				type:'operand',
+			});
+			i++;
+		}
+		/* 버튼의 메타정보 */
+		var btnMetaArr = [
+			{
+				nomalSymbol:'(',
+				meaning:'left parentheses',
+				type:'operand',
+			},
+			{
+				nomalSymbol:')',
+				meaning:'right parentheses',
+				type:'operand',
+			},
+			{
+				nomalSymbol:'mod',
+				meaning:'Modulo',
+				type : 'operator',
+			},
+			{
+				nomalSymbol:'AC',
+				meaning:'All Clear',
+				type:'action',
+				controlAction:function(event) {
+					expressionHandler.setValue('');
+				},
+			},
+			{
+				nomalSymbol:'C',
+				meaning:'Clear',
+				type:'action',
+				controlAction:function(event) {
+					expressionHandler.setValue('');				
+				},
+			},
+			{
+				nomalSymbol:'CE',
+				meaning:'Clear Entry',
+				type:'action',
+				controlAction:function(event) {
+					var expression = expressionHandler.getValue();
+					if(expression && expression.length>0)
+						expressionHandler.setValue(expression.substring(0,expression.length-1));
+				},
+			},
+			{
+				nomalSymbol:'÷',
+				meaning:'/',
+				type : 'operator',
+				operatorAction : function (a, b){
+					if(b===0)
+					throw Error("tried to divide by ZERO.");
+					return a / b;				
+				},
+			},
+			{
+				nomalSymbol:'×',
+				meaning:'*',
+				type : 'operator',
+				operatorAction : function (a, b){				
+					return a * b;				
+				},
+			},
+			{
+				nomalSymbol:'+',
+				meaning:'+',
+				type : 'operator',
+				operatorAction : function (a, b){				
+					return a + b;				
+				},
+			},
+			{
+				nomalSymbol:'-',
+				meaning:'-',
+				type : 'operator',
+				operatorAction : function (a, b){				
+					if(!a){
+						return -b;
+					}
+					return a - b;				
+				},
+			},
+			{
+				nomalSymbol:'=',
+				meaning:'=',
+				type:'action',
+				controlAction:doCalc,
+			},
+			{
+				nomalSymbol:'.',
+				meaning:'.',
+				type:'operand',
+			},
+		];
+	
+		
+		var DEFAULT_NUM_COLS = 4;
+		var targetEle = document.getElementById('btn-container');
+		createButtonElement(btnMetaArr.concat(numberSymbols),DEFAULT_NUM_COLS,targetEle);
+	});
+
+	/* 계산하기 */
+	var doCalc =  function() {
+		expressionHandler = handlerBuilder(EXPRESSION_TEXT_SELECTOR);
+		logHandler = handlerBuilder(LOG_TEXT_SELECTOR);
+		resultHandler = handlerBuilder(RESULT_TEXT_SELECTOR);
+		var expression =expressionHandler.getValue();
+		if(isValid(expression) ) {
+			result = calcluateExpression(expression);
+			resultHandler.setValue(result);
+			logHandler.setValue(logHandler.getValue()+"\n" + expression +" = "+result);
+		} else {
+			resultHandler.setValue('식이 잘못 됨');
+		}
+	}
+
+	/**
+	 * @deprecated
+	 * @description 계산하기 클로저
+	 * @param {string} selector 계산할 대상이 입력된 element의 selector
+	 * @param {function} validFunc 해당 식이 맞는지 여부
+	 * @param {function} 
+	 */
+	function bindCalculator(selector,calcFunc,validFunc,selectorHandler) {
+		var ele = document.querySelector(selector);
+		selectorHandler = selectorHandler || function(ele) {return ele.value; };
+		return function (func){
+			value = selectorHandler(ele);
+			if(!validFunc(value)){
+				return "invalid";
+			}
+			return calcFunc(value);
+		}
+	}
+
+	function moduloFilter(expression) {
+		return expression.replaceAll(/mod/g,'%');
+	}
+	function spaceFilter(expression) {
+		return expression.replaceAll(/\s/g,'');
+	}
+	/**
+	 * @description 계산식이 유효한지 여부
+	 *
+	 */
+	function isValid(expression) {
+		if(!expression) {
+			return false;
+		}
+		var antiPattern = /([\+\-\×\÷\%\=]|mod){2,}|\)\(/gm;
+		if(expression.search(antiPattern)>0) {
+			return false;
+		}
+		var leftP=0,rightP=0,i = 0;
+		for(i=0;i<expression.length;i++){
+			if(expression[i]==='('){
+				leftP++;
+			}else if(expression[i]===')') {
+				rightP++;
+			}
+		}
+		return leftP>=rightP;
+	}
+
+
+		var operators = 
+		{
+			'+': (a,b) => { return a+b},
+			'-': (a,b) => a-b,
+			'×': (a,b) => a*b,
+			'÷': (a,b) => a/b,
+			'%': (a,b) => a%b,
+			'^': (a,b) => a^b,
+		}
+			
+	/**
+	 * @description Calculate expression
+	 * @param {string} expression 표현식
+	 * @return {number} 표현식의 결과
+	 */
+	function calculatePostfix(postfixExpression ) {
+
+		var i, length = postfixExpression.length;
+		var stack = [];
+		for (i = 0 ; i<length ; i++) {
+			var token = postfixExpression[i];
+			if(typeof postfixExpression[i] === 'number' ){
+				stack.push(token);
+			}else if(stack.length >= 2 &&  operators[token] && typeof  operators[token] === 'function') {
+				var a = stack.pop() , b = stack.pop() ;
+				var result = operators[token](b,a);
+				stack.push(result);
+			}
+			console.log("stack :",stack);
+		}
+		return stack[0];
+	}
+
+	/**
+	 *  
+	 * @description 숫자인지 확인
+	 * @param {string} character 문자(길이1의 문자열)
+	 * @returns {boolean} 숫자여부 
+	 */
+	function isDigit(character){
+		return character /* undefined가 아니고, length가 0보다 큼 */ &&
+		 ( typeof character) === 'string' /* 문자열 */ && 
+		 character.length === 1 /* 하나짜리 */ &&
+		character.charAt(0) >= '0' &&  character.charAt(0) <= '9' /* ascii 범위 여부 */;
+	}
+	// a + b * c
+	// a b c * +
+	//         i 
+	// [ a d ]  
+	// b * c = d
+	// a + d = e
+	/**
+	 * @description 중위표현식을 후위표현식으로 표현
+	 * @param {string} infixExpression 중위표현식
+	 * @return {string[]} 변환된 후위표현식(토근의 배열)
+	 */
+	function convertInfix2postfix( infixExpression ){
+		
+		var stack = [];
+		var isp = {'(':0, ')':19, '+':12,'-':12, '×':13, '÷':13, '%':13};
+		var icp = {'(':20, ')':19, '+':12,'-':12, '×':13, '÷':13, '%':13}; 
+		var postfixExpression = [];
+		var length = infixExpression.length;
+		var i, curNum, curDigit;
+		var numShiftFromPoint;
+
+		for ( i = 0 ;i < length ;i++) {
+			var character = infixExpression[i];
+
+			if(isDigit(character )) {
+				curDigit = character.charAt(0) - '0'; 
+				curNum = curNum || 0;
+				curNum *=10;
+				curNum += curDigit;
+				console.log("numShiftFromPoint:",numShiftFromPoint);
+				if(typeof numShiftFromPoint === 'number') {
+					numShiftFromPoint++;
+				}					
+			}else if(character === '.') {
+				console.log("point")
+				numShiftFromPoint = 0;
+			}else {
+				if(curNum){
+					console.log("numShiftFromPoint:",numShiftFromPoint);
+					// 10^2 = 100
+					if(numShiftFromPoint){
+						curNum /= Math.pow(10,numShiftFromPoint);
+						numShiftFromPoint = undefined;
+					}
+					postfixExpression.push(curNum); // 숫자
+					curNum = undefined;
+				}
+				if(character ===')'){
+					while(stack.length > 0 && stack[stack.length-1] !=='(') {
+						postfixExpression.push(stack.pop());
+					}
+					stack.pop(); // '(' 왼쪽괄호 제거
+				}else{
+					while(stack.length > 0 && 
+					isp[stack[stack.length-1]	] >= icp[character]) {
+						postfixExpression.push(stack.pop());
+					}
+					stack.push(character);
+				}	
+			}
+
+		}
+		if(curNum){
+			console.log("numShiftFromPoint:",numShiftFromPoint)
+			if(numShiftFromPoint){
+				curNum /= Math.pow(10,numShiftFromPoint);
+				numShiftFromPoint = false;
+			}
+			postfixExpression.push(curNum); // 숫자
+
+		}
+		while (stack.length>0) {
+			postfixExpression.push(stack.pop());
+		}			
+		return postfixExpression;
+	}
+
+	var calcluateExpression = function (expression) {
+		var result = "failed";
+		if(isValid(expression)){
+			expression = spaceFilter(expression);
+			expression = moduloFilter(expression);
+			expression = expression[0] === '-' || expression[0] === '+' ? '0'+ expression : expression;  
+			console.log('after preprocessor:',expression );
+			var postfixExpression = convertInfix2postfix(expression);
+			console.log('postfixExpression:',postfixExpression)
+			result = calculatePostfix(postfixExpression);	
+			console.log('result:',result);
+		}
+		return result;
+
+	}
+
+</script>
